@@ -9,8 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 @RequiredArgsConstructor
@@ -21,22 +22,24 @@ public class CourseServiceImpl implements CourseService {
     private final ModelMapper modelMapper;
 
     @Override
-    public Course createCourse(CourseDto courseDto) {
+    public CourseDto createCourse(CourseDto courseDto) {
         Course course = modelMapper.map(courseDto, Course.class);
-        return courseRepository.save(course);
+        courseRepository.save(course);
+        return modelMapper.map(course, CourseDto.class);
     }
 
     @Override
-    public Course getCourseById(Long id) {
-        return courseRepository.findById(id)
+    public CourseDto getCourseById(Long id) {
+        Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Course with id : " + id + " not found"));
+        return modelMapper.map(course, CourseDto.class);
     }
 
     @Override
-    public List<Course> getAllCourses() {
-        List<Course> courses = new ArrayList<>();
-        courseRepository.findAll().forEach(courses::add);
-        return courses;
+    public List<CourseDto> getAllCourses() {
+        return StreamSupport.stream(courseRepository.findAll().spliterator(), false)
+                .map(course -> modelMapper.map(course, CourseDto.class))
+                .collect(Collectors.toList());
     }
 
     @Override

@@ -7,11 +7,11 @@ import java.util.List;
 
 public interface CourseService {
 
-    Course createCourse (CourseDto courseDto);
+    CourseDto createCourse (CourseDto courseDto);
 
-    Course getCourseById(Long id);
+    CourseDto getCourseById(Long id);
 
-    List<Course> getAllCourses();
+    List<CourseDto> getAllCourses();
 
     void deleteCourseById (Long id);
 }

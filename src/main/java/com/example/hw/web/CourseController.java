@@ -1,7 +1,6 @@
 package com.example.hw.web;
 
 import com.example.hw.dto.CourseDto;
-import com.example.hw.repository.entity.Course;
 import com.example.hw.service.CourseService;
 import com.example.hw.service.DtoValidation;
 import lombok.RequiredArgsConstructor;
@@ -30,21 +29,21 @@ public class CourseController {
         return ResponseEntity.status(HttpStatus.CREATED).body(courseDto);
     }
 
-    @GetMapping("/course/{id}")
-    public ResponseEntity getCourseById(@PathVariable Long studentId) {
-        Course course = courseService.getCourseById(studentId);
+    @GetMapping("/course/{courseId}")
+    public ResponseEntity getCourseById(@PathVariable Long courseId) {
+        CourseDto course = courseService.getCourseById(courseId);
         return ResponseEntity.ok(course);
     }
 
     @GetMapping
     public ResponseEntity getAllCourses() {
-        List<Course> courses = courseService.getAllCourses();
+        List<CourseDto> courses = courseService.getAllCourses();
         return ResponseEntity.ok(courses);
     }
 
     @DeleteMapping("/delete/{courseId}")
-    public ResponseEntity deleteCourseByID(@PathVariable Long studentId) {
-        courseService.deleteCourseById(studentId);
-        return ResponseEntity.ok("Student with id : " + studentId + " delete successful");
+    public ResponseEntity deleteCourseByID(@PathVariable Long courseId) {
+        courseService.deleteCourseById(courseId);
+        return ResponseEntity.ok("Student with id : " + courseId + " delete successful");
     }
 }
