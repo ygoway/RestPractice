@@ -25,8 +25,7 @@ public class CourseController {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(dtoValidation.inputDtoValidation(bindingResult));
         }
-        courseService.createCourse(courseDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(courseDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(courseService.createCourse(courseDto));
     }
 
     @GetMapping("/course/{courseId}")
