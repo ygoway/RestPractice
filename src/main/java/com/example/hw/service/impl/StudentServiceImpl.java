@@ -9,8 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 @RequiredArgsConstructor
@@ -20,22 +21,24 @@ public class StudentServiceImpl implements StudentService {
     private final ModelMapper modelMapper;
 
     @Override
-    public Student createStudent(StudentDto studentDto) {
+    public StudentDto createStudent(StudentDto studentDto) {
         Student student = modelMapper.map(studentDto, Student.class);
-        return studentRepository.save(student);
+        studentRepository.save(student);
+        return modelMapper.map(student, StudentDto.class);
     }
 
     @Override
-    public Student getStudentById(Long id) {
-        return studentRepository.findById(id)
+    public StudentDto getStudentById(Long id) {
+        Student student = studentRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Student with id : " + id + " not found"));
+        return modelMapper.map(student, StudentDto.class);
     }
 
     @Override
-    public List<Student> getAllStudents() {
-        List<Student> students = new ArrayList<>();
-        studentRepository.findAll().forEach(students::add);
-        return students;
+    public List<StudentDto> getAllStudents() {
+        return StreamSupport.stream(studentRepository.findAll().spliterator(),false)
+                .map(student -> modelMapper.map(student, StudentDto.class))
+                .collect(Collectors.toList());
     }
 
     @Override
