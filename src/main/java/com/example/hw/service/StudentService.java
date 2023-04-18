@@ -7,11 +7,11 @@ import java.util.List;
 
 public interface StudentService {
 
-    Student createStudent(StudentDto studentDto);
+    StudentDto createStudent(StudentDto studentDto);
 
-    Student getStudentById(Long id);
+    StudentDto getStudentById(Long id);
 
-    List<Student> getAllStudents();
+    List<StudentDto> getAllStudents();
 
     void deleteStudentById(Long id);
 }
