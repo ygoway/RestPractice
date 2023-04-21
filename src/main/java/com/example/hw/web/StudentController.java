@@ -2,6 +2,7 @@ package com.example.hw.web;
 
 import com.example.hw.dto.StudentDto;
 import com.example.hw.service.DtoValidation;
+import com.example.hw.service.StudentCourseService;
 import com.example.hw.service.StudentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,8 @@ public class StudentController {
 
     private final StudentService studentService;
 
+    private final StudentCourseService studentCourseService;
+
     private final DtoValidation dtoValidation;
 
     @PostMapping("/create")
@@ -28,6 +31,13 @@ public class StudentController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(dtoValidation.inputDtoValidation(bindingResult));
         }
         return ResponseEntity.status(HttpStatus.CREATED).body(studentService.createStudent(studentDto));
+    }
+
+    @PostMapping("/student/{studentId}/addCourse/{courseId}")
+    public ResponseEntity addCourseToStudent(@PathVariable Long studentId, @PathVariable Long courseId) {
+        studentCourseService.addCourseToStudent(studentId, courseId);
+        return ResponseEntity.status(HttpStatus.CREATED).body("student with id : "
+                + studentId + " added to course with id : " + courseId + " successful");
     }
 
     @GetMapping("/{studentId}")
@@ -42,9 +52,22 @@ public class StudentController {
         return ResponseEntity.ok(students);
     }
 
+    @GetMapping("/studentCourseList/{studentId}")
+    public ResponseEntity getStudentCourseList(@PathVariable Long studentId) {
+        return ResponseEntity.ok(studentCourseService.getStudentCourseList(studentId));
+    }
+
     @DeleteMapping("/delete/{studentId}")
     public ResponseEntity deleteStudentByID(@PathVariable Long studentId) {
         studentService.deleteStudentById(studentId);
         return ResponseEntity.ok("Student with id : " + studentId + " delete successful");
     }
+
+    @DeleteMapping("/deleteStudent/{studentId}/fromCourse/{courseId}")
+    public ResponseEntity deleteStudentFromCourse(@PathVariable Long studentId, @PathVariable Long courseId) {
+        studentCourseService.deleteStudentFromCourse(studentId, courseId);
+        return ResponseEntity.ok("Student with id : " + studentId +
+                " delete successful from course with id : " + courseId);
+    }
+
 }
