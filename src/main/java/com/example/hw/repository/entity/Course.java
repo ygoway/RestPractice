@@ -20,6 +20,6 @@ public class Course {
     private String courseName;
     private Integer coursePrice;
 
-    @ManyToMany(mappedBy = "courses", cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "courses", cascade = {CascadeType.MERGE,CascadeType.REMOVE})
     private List<Student> students;
 }
