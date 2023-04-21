@@ -27,11 +27,11 @@ public class StudentCourseServiceImpl implements StudentCourseService {
     @Override
     public Student addCourseToStudent(Long studentId, Long courseId) {
         Student student = studentRepository.findById(studentId)
-                .orElseThrow(() -> new NotFoundException("Student with id :"  + studentId + " not found"));
+                .orElseThrow(() -> new NotFoundException("Student with id :" + studentId + " not found"));
         Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new NotFoundException("Course with id :"  + courseId + " not found"));
+                .orElseThrow(() -> new NotFoundException("Course with id :" + courseId + " not found"));
         List<Course> courses = student.getCourses();
-        if(!courses.contains(course)) {
+        if (!courses.contains(course)) {
             courses.add(course);
             student.setCourses(courses);
             return studentRepository.save(student);
@@ -43,24 +43,36 @@ public class StudentCourseServiceImpl implements StudentCourseService {
     @Override
     public List<CourseDto> getStudentCourseList(Long studentId) {
         Student student = studentRepository.findById(studentId)
-                .orElseThrow(() -> new NotFoundException("Student with id :"  + studentId + " not found"));
+                .orElseThrow(() -> new NotFoundException("Student with id :" + studentId + " not found"));
         return student.getCourses()
                 .stream().map(course -> modelMapper.map(course, CourseDto.class))
                 .collect(Collectors.toList());
     }
 
-    @Override
     public void deleteStudentFromCourse(Long studentId, Long courseId) {
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new NotFoundException("Course with id :" + courseId + " not found"));
+        Student student = course.getStudents().stream()
+                .filter(student1 -> student1.getId().equals(studentId))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("Student with id :" + studentId + " not joined to course : " + course));
+        student.getCourses().remove(course);
+        course.getStudents().remove(student);
+        courseRepository.save(course);
+    }
+
+    /*@Override
+    public void deleteStudentFromCourse1(Long studentId, Long courseId) {
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new NotFoundException("Student with id :"  + studentId + " not found"));
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new NotFoundException("Course with id :"  + courseId + " not found"));
-        if(course.getStudents().contains(student)) {
-            course.getStudents().remove(student);
-            student.getCourses().remove(course);
-            courseRepository.save(course);
+        if (course.getStudents().removeIf(foundStudent -> foundStudent.getId().equals(studentId))) {
+            student.getCourses().removeIf(foundCourse -> foundCourse.getId().equals(courseId));
+            studentRepository.save(student);
         } else {
             throw new NotFoundException("Student with id :"  + studentId + " not joined to course : " + course);
         }
-    }
+    }*/
+
 }
